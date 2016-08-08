@@ -17,18 +17,26 @@ struct Args
 fn main()
 {
     let docopt = match Docopt::new(USAGE) {
-        Ok(d) => d,
-        Err(e) => e.exit(),
+        Ok(docopt) => docopt,
+        Err(err) => err.exit(),
     };
 
     let args: Args = match docopt.decode() {
         Ok(args) => args,
-        Err(e) => e.exit(),
+        Err(err) => err.exit(),
     };
 
     let parser = teleinfo::Parser::new();
-    let frame = parser.read_frame(args.arg_device);
-    let data = parser.parse(frame);
+
+    let frame = match parser.read_frame(args.arg_device) {
+        Ok(frame) => frame,
+        Err(err) => panic!("Unable to read device: {}", err),
+    };
+
+    let data = match parser.parse(frame) {
+        Ok(data) => data,
+        Err(err) => panic!("Unable to parse frame: {}", err),
+    };
 
     match json::encode(&data) {
         Ok(json) => println!("{}", json),

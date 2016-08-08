@@ -49,7 +49,7 @@ impl Parser
         Parser {}
     }
 
-    pub fn read_frame(&self, path: String) -> String
+    pub fn read_frame(&self, path: String) -> Result<String, String>
     {
         let file = match File::open(&path) {
             Ok(file) => file,
@@ -59,42 +59,59 @@ impl Parser
         let mut buffer = BufReader::new(&file);
         let mut line: Vec<u8> = vec![];
 
-        buffer.read_until(0x2, &mut line);
+        match buffer.read_until(0x2, &mut line) {
+            Ok(_) => (),
+            Err(err) => return Err(err.to_string()),
+        };
+
         buffer.consume(1);
         line = vec![];
 
-        buffer.read_until(0x3, &mut line);
+        match buffer.read_until(0x3, &mut line) {
+            Ok(_) => (),
+            Err(err) => return Err(err.to_string()),
+        };
 
-        String::from_utf8(line)
-            .unwrap()
-            .trim_right_matches("\u{3}")
-            .replace("\r", "")
+        match String::from_utf8(line) {
+            Ok(s) => Ok(s.trim_right_matches("\u{3}").replace("\r", "")),
+            Err(err) => Err(err.to_string()),
+        }
     }
 
-    pub fn parse(self: Self, frame: String) -> Data
+    pub fn parse(self: Self, frame: String) -> Result<Data, String>
     {
         let mut data = Data::new();
 
         for line in frame.lines() {
             let mut tokens = line.split_whitespace();
 
-            match tokens.nth(0).unwrap() {
-                "ADCO" => data.adco = tokens.nth(0).unwrap().parse().unwrap(),
-                "OPTARIF" => data.optarif = tokens.nth(0).unwrap().parse().unwrap(),
-                "ISOUSC" => data.isousc = tokens.nth(0).unwrap().parse().unwrap(),
-                "HCHC" => data.hchc = tokens.nth(0).unwrap().parse().unwrap(),
-                "HCHP" => data.hchp = tokens.nth(0).unwrap().parse().unwrap(),
-                "PTEC" => data.ptec = tokens.nth(0).unwrap().parse().unwrap(),
-                "IINST" => data.iinst = tokens.nth(0).unwrap().parse().unwrap(),
-                "IMAX" => data.imax = tokens.nth(0).unwrap().parse().unwrap(),
-                "PAPP" => data.papp = tokens.nth(0).unwrap().parse().unwrap(),
-                "HHPHC" => data.hhphc = tokens.nth(0).unwrap().parse().unwrap(),
-                "MOTDETAT" => data.motdetat = tokens.nth(0).unwrap().parse().unwrap(),
-                _ => println!("Invalid field"),
+            let key = match tokens.nth(0) {
+                Some(key) => key.to_lowercase(),
+                None => continue,
+            };
+
+            let value = match tokens.nth(0) {
+                Some(value) => value,
+                None => continue,
+            };
+
+            match key.as_str() {
+                "adco"     => data.adco     = value.parse().unwrap(),
+                "optarif"  => data.optarif  = value.parse().unwrap(),
+                "isousc"   => data.isousc   = value.parse().unwrap(),
+                "hchc"     => data.hchc     = value.parse().unwrap(),
+                "hchp"     => data.hchp     = value.parse().unwrap(),
+                "ptec"     => data.ptec     = value.parse().unwrap(),
+                "iinst"    => data.iinst    = value.parse().unwrap(),
+                "imax"     => data.imax     = value.parse().unwrap(),
+                "papp"     => data.papp     = value.parse().unwrap(),
+                "hhphc"    => data.hhphc    = value.parse().unwrap(),
+                "motdetat" => data.motdetat = value.parse().unwrap(),
+                _ => return Err(String::from("Invalid field")),
             };
         }
 
-        data
+        Ok(data)
     }
 }
 
@@ -103,7 +120,12 @@ fn read_frame()
 {
     let parser = Parser::new();
 
-    assert_eq!(parser.read_frame(&Path::new("./teleinfo.txt")), "ADCO 130622778433 D
+    let frame = match parser.read_frame(String::from("./teleinfo.txt")) {
+        Ok(frame) => frame,
+        Err(err) => panic!("{}", err),
+    };
+
+    assert_eq!(frame, "ADCO 130622778433 D
 OPTARIF HC.. <
 ISOUSC 45 ?
 HCHC 041478078 -
@@ -119,6 +141,8 @@ MOTDETAT 000000 B");
 #[test]
 fn parse()
 {
+    let parser = Parser::new();
+
     let frame = String::from("ADCO 130622778433 D
 OPTARIF HC.. <
 ISOUSC 45 ?
@@ -131,9 +155,12 @@ PAPP 00440 )
 HHPHC D /
 MOTDETAT 000000 B");
 
-    let parser = Parser::new();
+    let data = match parser.parse(frame) {
+        Ok(data) => data,
+        Err(err) => panic!("{}", err),
+    };
 
-    assert_eq!(parser.parse(frame), Data {
+    assert_eq!(data, Data {
         adco: String::from("130622778433"),
         optarif: String::from("HC.."),
         isousc: 45,
