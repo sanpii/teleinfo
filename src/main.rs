@@ -2,6 +2,7 @@ extern crate docopt;
 extern crate rustc_serialize;
 
 use docopt::Docopt;
+use rustc_serialize::json;
 
 mod teleinfo;
 
@@ -29,5 +30,8 @@ fn main()
     let frame = parser.read_frame(args.arg_device);
     let data = parser.parse(frame);
 
-    println!("{:?}", data);
+    match json::encode(&data) {
+        Ok(json) => println!("{}", json),
+        Err(err) => panic!("JSON error: {}", err),
+    };
 }

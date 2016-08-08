@@ -2,7 +2,7 @@ use std::fs::File;
 use std::io::BufReader;
 use std::io::BufRead;
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Eq, PartialEq, RustcEncodable)]
 pub struct Data
 {
     adco: String,
