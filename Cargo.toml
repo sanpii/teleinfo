@@ -4,3 +4,5 @@ version = "1.0.0"
 authors = ["Sanpi <sanpi@homecomputing.fr>"]
 
 [dependencies]
+docopt = "0.6"
+rustc-serialize = "0.3"
