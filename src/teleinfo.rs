@@ -107,7 +107,7 @@ impl Parser
                 "papp"     => data.papp     = value.parse().unwrap(),
                 "hhphc"    => data.hhphc    = value.parse().unwrap(),
                 "motdetat" => data.motdetat = value.parse().unwrap(),
-                _ => return Err(String::from("Invalid field")),
+                _ => return Err(format!("Invalid field: {}", key)),
             };
         }
 
