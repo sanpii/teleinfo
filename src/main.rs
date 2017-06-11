@@ -8,7 +8,7 @@ use docopt::Docopt;
 
 mod teleinfo;
 
-static USAGE: &'static str = "Usage: ws2300 <device>";
+static USAGE: &'static str = "Usage: teleinfo <device>";
 
 #[derive(Deserialize)]
 struct Args
