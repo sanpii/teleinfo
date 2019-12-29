@@ -1,36 +1,26 @@
-extern crate docopt;
+extern crate structopt;
 extern crate serde;
 #[macro_use]
 extern crate serde_derive;
 extern crate serde_json;
 
-use docopt::Docopt;
+use structopt::StructOpt;
 
 mod teleinfo;
 
-static USAGE: &str = "Usage: teleinfo <device>";
-
-#[derive(Deserialize)]
-struct Args
+#[derive(StructOpt)]
+struct Opt
 {
-    arg_device: String,
+    device: String,
 }
 
 fn main()
 {
-    let docopt = match Docopt::new(USAGE) {
-        Ok(docopt) => docopt,
-        Err(err) => err.exit(),
-    };
-
-    let args: Args = match docopt.deserialize() {
-        Ok(args) => args,
-        Err(err) => err.exit(),
-    };
+    let opt = Opt::from_args();
 
     let parser = teleinfo::Parser::new();
 
-    let frame = match parser.read_frame(args.arg_device) {
+    let frame = match parser.read_frame(opt.device) {
         Ok(frame) => frame,
         Err(err) => panic!("Unable to read device: {}", err),
     };
