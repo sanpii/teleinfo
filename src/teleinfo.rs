@@ -73,7 +73,7 @@ impl Parser
         };
 
         match String::from_utf8(line) {
-            Ok(s) => Ok(s.trim_right_matches("\u{3}").replace("\r", "")),
+            Ok(s) => Ok(s.trim_end_matches('\u{3}').replace("\r", "")),
             Err(err) => Err(err.to_string()),
         }
     }
