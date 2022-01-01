@@ -2,7 +2,7 @@
 name = "teleinfo"
 version = "1.0.0"
 authors = ["Sanpi <sanpi@homecomputing.fr>"]
-edition = "2018"
+edition = "2021"
 
 [dependencies]
 serde = "1.0"
