@@ -70,18 +70,18 @@ impl Parser {
         }
     }
 
-    pub fn parse(self: Self, frame: String) -> Result<Data, String> {
+    pub fn parse(self, frame: String) -> Result<Data, String> {
         let mut data = Data::new();
 
         for line in frame.lines() {
             let mut tokens = line.split_whitespace();
 
-            let key = match tokens.nth(0) {
+            let key = match tokens.next() {
                 Some(key) => key.to_lowercase(),
                 None => continue,
             };
 
-            let value = match tokens.nth(0) {
+            let value = match tokens.next() {
                 Some(value) => value,
                 None => continue,
             };
