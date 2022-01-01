@@ -1,10 +1,9 @@
 use std::fs::File;
-use std::io::BufReader;
 use std::io::BufRead;
+use std::io::BufReader;
 
 #[derive(Debug, Eq, PartialEq, serde_derive::Serialize)]
-pub struct Data
-{
+pub struct Data {
     adco: String,
     optarif: String,
     isousc: u8,
@@ -18,10 +17,8 @@ pub struct Data
     motdetat: String,
 }
 
-impl Data
-{
-    pub fn new() -> Data
-    {
+impl Data {
+    pub fn new() -> Data {
         Data {
             adco: String::new(),
             optarif: String::new(),
@@ -38,19 +35,14 @@ impl Data
     }
 }
 
-pub struct Parser
-{
-}
+pub struct Parser {}
 
-impl Parser
-{
-    pub fn new() -> Parser
-    {
+impl Parser {
+    pub fn new() -> Parser {
         Parser {}
     }
 
-    pub fn read_frame(&self, path: String) -> Result<String, String>
-    {
+    pub fn read_frame(&self, path: String) -> Result<String, String> {
         let file = match File::open(&path) {
             Ok(file) => file,
             Err(err) => panic!("Unable to open {}: {}", path, err),
@@ -78,8 +70,7 @@ impl Parser
         }
     }
 
-    pub fn parse(self: Self, frame: String) -> Result<Data, String>
-    {
+    pub fn parse(self: Self, frame: String) -> Result<Data, String> {
         let mut data = Data::new();
 
         for line in frame.lines() {
@@ -96,16 +87,16 @@ impl Parser
             };
 
             match key.as_str() {
-                "adco"     => data.adco     = value.parse().unwrap(),
-                "optarif"  => data.optarif  = value.parse().unwrap(),
-                "isousc"   => data.isousc   = value.parse().unwrap(),
-                "hchc"     => data.hchc     = value.parse().unwrap(),
-                "hchp"     => data.hchp     = value.parse().unwrap(),
-                "ptec"     => data.ptec     = value.parse().unwrap(),
-                "iinst"    => data.iinst    = value.parse().unwrap(),
-                "imax"     => data.imax     = value.parse().unwrap(),
-                "papp"     => data.papp     = value.parse().unwrap(),
-                "hhphc"    => data.hhphc    = value.parse().unwrap(),
+                "adco" => data.adco = value.parse().unwrap(),
+                "optarif" => data.optarif = value.parse().unwrap(),
+                "isousc" => data.isousc = value.parse().unwrap(),
+                "hchc" => data.hchc = value.parse().unwrap(),
+                "hchp" => data.hchp = value.parse().unwrap(),
+                "ptec" => data.ptec = value.parse().unwrap(),
+                "iinst" => data.iinst = value.parse().unwrap(),
+                "imax" => data.imax = value.parse().unwrap(),
+                "papp" => data.papp = value.parse().unwrap(),
+                "hhphc" => data.hhphc = value.parse().unwrap(),
                 "motdetat" => data.motdetat = value.parse().unwrap(),
                 _ => return Err(format!("Invalid field: {}", key)),
             };
@@ -116,8 +107,7 @@ impl Parser
 }
 
 #[test]
-fn read_frame()
-{
+fn read_frame() {
     let parser = Parser::new();
 
     let frame = match parser.read_frame(String::from("./teleinfo.txt")) {
@@ -125,7 +115,9 @@ fn read_frame()
         Err(err) => panic!("{}", err),
     };
 
-    assert_eq!(frame, "ADCO 130622778433 D
+    assert_eq!(
+        frame,
+        "ADCO 130622778433 D
 OPTARIF HC.. <
 ISOUSC 45 ?
 HCHC 041478078 -
@@ -135,15 +127,16 @@ IINST 002 Y
 IMAX 039 K
 PAPP 00440 )
 HHPHC D /
-MOTDETAT 000000 B");
+MOTDETAT 000000 B"
+    );
 }
 
 #[test]
-fn parse()
-{
+fn parse() {
     let parser = Parser::new();
 
-    let frame = String::from("ADCO 130622778433 D
+    let frame = String::from(
+        "ADCO 130622778433 D
 OPTARIF HC.. <
 ISOUSC 45 ?
 HCHC 041478078 -
@@ -153,24 +146,28 @@ IINST 002 Y
 IMAX 039 K
 PAPP 00440 )
 HHPHC D /
-MOTDETAT 000000 B");
+MOTDETAT 000000 B",
+    );
 
     let data = match parser.parse(frame) {
         Ok(data) => data,
         Err(err) => panic!("{}", err),
     };
 
-    assert_eq!(data, Data {
-        adco: String::from("130622778433"),
-        optarif: String::from("HC.."),
-        isousc: 45,
-        hchc: 41478078,
-        hchp: 68619587,
-        ptec: String::from("HP.."),
-        iinst: 2,
-        imax: 39,
-        papp: 440,
-        hhphc: String::from("D"),
-        motdetat: String::from("000000"),
-    });
+    assert_eq!(
+        data,
+        Data {
+            adco: String::from("130622778433"),
+            optarif: String::from("HC.."),
+            isousc: 45,
+            hchc: 41478078,
+            hchp: 68619587,
+            ptec: String::from("HP.."),
+            iinst: 2,
+            imax: 39,
+            papp: 440,
+            hhphc: String::from("D"),
+            motdetat: String::from("000000"),
+        }
+    );
 }

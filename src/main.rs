@@ -3,13 +3,11 @@ use clap::Parser;
 mod teleinfo;
 
 #[derive(Parser)]
-struct Opt
-{
+struct Opt {
     device: String,
 }
 
-fn main()
-{
+fn main() {
     let opt = Opt::parse();
 
     let parser = teleinfo::Parser::new();
