@@ -1,8 +1,8 @@
-use structopt::StructOpt;
+use clap::Parser;
 
 mod teleinfo;
 
-#[derive(StructOpt)]
+#[derive(Parser)]
 struct Opt
 {
     device: String,
@@ -10,7 +10,7 @@ struct Opt
 
 fn main()
 {
-    let opt = Opt::from_args();
+    let opt = Opt::parse();
 
     let parser = teleinfo::Parser::new();
 
