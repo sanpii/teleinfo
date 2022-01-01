@@ -1,3 +1,5 @@
+#![warn(warnings)]
+
 use clap::Parser;
 
 mod teleinfo;
