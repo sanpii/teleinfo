@@ -37,7 +37,7 @@ impl Parser {
         };
 
         let mut buffer = BufReader::new(&file);
-        let mut line: Vec<u8> = vec![];
+        let mut line: Vec<u8> = Vec::new();
 
         match buffer.read_until(0x2, &mut line) {
             Ok(_) => (),
@@ -45,7 +45,7 @@ impl Parser {
         };
 
         buffer.consume(1);
-        line = vec![];
+        line = Vec::new();
 
         match buffer.read_until(0x3, &mut line) {
             Ok(_) => (),
