@@ -2,7 +2,7 @@ use std::fs::File;
 use std::io::BufRead;
 use std::io::BufReader;
 
-#[derive(Debug, Eq, PartialEq, serde_derive::Serialize)]
+#[derive(Debug, Default, Eq, PartialEq, serde_derive::Serialize)]
 pub struct Data {
     adco: String,
     optarif: String,
@@ -19,19 +19,7 @@ pub struct Data {
 
 impl Data {
     pub fn new() -> Data {
-        Data {
-            adco: String::new(),
-            optarif: String::new(),
-            isousc: 0,
-            hchc: 0,
-            hchp: 0,
-            ptec: String::new(),
-            iinst: 0,
-            imax: 0,
-            papp: 0,
-            hhphc: String::new(),
-            motdetat: String::new(),
-        }
+        Self::default()
     }
 }
 
