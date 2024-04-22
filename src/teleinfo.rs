@@ -27,7 +27,7 @@ pub struct Parser {}
 
 impl Parser {
     pub fn new() -> Parser {
-        Parser {}
+        Self {}
     }
 
     pub fn read_frame(&self, path: String) -> Result<String, String> {
