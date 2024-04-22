@@ -33,7 +33,7 @@ impl Parser {
     pub fn read_frame(&self, path: String) -> Result<String, String> {
         let file = match File::open(&path) {
             Ok(file) => file,
-            Err(err) => panic!("Unable to open {}: {}", path, err),
+            Err(err) => panic!("Unable to open {path}: {err}"),
         };
 
         let mut buffer = BufReader::new(&file);
@@ -86,7 +86,7 @@ impl Parser {
                 "papp" => data.papp = value.parse().unwrap(),
                 "hhphc" => data.hhphc = value.parse().unwrap(),
                 "motdetat" => data.motdetat = value.parse().unwrap(),
-                _ => return Err(format!("Invalid field: {}", key)),
+                _ => return Err(format!("Invalid field: {key}")),
             };
         }
 
@@ -100,7 +100,7 @@ fn read_frame() {
 
     let frame = match parser.read_frame(String::from("./teleinfo.txt")) {
         Ok(frame) => frame,
-        Err(err) => panic!("{}", err),
+        Err(err) => panic!("{err}"),
     };
 
     assert_eq!(
@@ -139,7 +139,7 @@ MOTDETAT 000000 B",
 
     let data = match parser.parse(frame) {
         Ok(data) => data,
-        Err(err) => panic!("{}", err),
+        Err(err) => panic!("{err}"),
     };
 
     assert_eq!(
