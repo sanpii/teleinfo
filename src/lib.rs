@@ -25,11 +25,12 @@ impl Data {
     }
 }
 
+#[derive(Clone, Default)]
 pub struct Parser {}
 
 impl Parser {
     pub fn new() -> Parser {
-        Self {}
+        Self::default()
     }
 
     pub fn read_frame(&self, path: String) -> Result<String, String> {
