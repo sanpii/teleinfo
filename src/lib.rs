@@ -97,15 +97,17 @@ impl Parser {
     }
 }
 
-#[test]
-fn read_frame() -> Result {
-    let parser = Parser::new();
+#[cfg(test)]
+mod test {
+    #[test]
+    fn read_frame() -> super::Result {
+        let parser = super::Parser::new();
 
-    let frame = parser.read_frame(String::from("./teleinfo.txt"))?;
+        let frame = parser.read_frame(String::from("./teleinfo.txt"))?;
 
-    assert_eq!(
-        frame,
-        "ADCO 130622778433 D
+        assert_eq!(
+            frame,
+            "ADCO 130622778433 D
 OPTARIF HC.. <
 ISOUSC 45 ?
 HCHC 041478078 -
@@ -116,17 +118,17 @@ IMAX 039 K
 PAPP 00440 )
 HHPHC D /
 MOTDETAT 000000 B"
-    );
+        );
 
-    Ok(())
+        Ok(())
 }
 
-#[test]
-fn parse() -> Result {
-    let parser = Parser::new();
+    #[test]
+    fn parse() -> super::Result {
+        let parser = super::Parser::new();
 
-    let frame = String::from(
-        "ADCO 130622778433 D
+        let frame = String::from(
+            "ADCO 130622778433 D
 OPTARIF HC.. <
 ISOUSC 45 ?
 HCHC 041478078 -
@@ -137,26 +139,27 @@ IMAX 039 K
 PAPP 00440 )
 HHPHC D /
 MOTDETAT 000000 B",
-    );
+        );
 
-    let data = parser.parse(frame)?;
+        let data = parser.parse(frame)?;
 
-    assert_eq!(
-        data,
-        Data {
-            adco: String::from("130622778433"),
-            optarif: String::from("HC.."),
-            isousc: 45,
-            hchc: 41478078,
-            hchp: 68619587,
-            ptec: String::from("HP.."),
-            iinst: 2,
-            imax: 39,
-            papp: 440,
-            hhphc: String::from("D"),
-            motdetat: String::from("000000"),
-        }
-    );
+        assert_eq!(
+            data,
+            super::Data {
+                adco: String::from("130622778433"),
+                optarif: String::from("HC.."),
+                isousc: 45,
+                hchc: 41478078,
+                hchp: 68619587,
+                ptec: String::from("HP.."),
+                iinst: 2,
+                imax: 39,
+                papp: 440,
+                hhphc: String::from("D"),
+                motdetat: String::from("000000"),
+            }
+        );
 
-    Ok(())
+        Ok(())
+    }
 }
