@@ -5,6 +5,7 @@ authors = ["Sanpi <sanpi@homecomputing.fr>"]
 edition = "2021"
 repository = "https://github.com/sanpii/teleinfo"
 license = "MIT"
+description = "Read & parse teleinfo trame"
 
 [dependencies]
 thiserror = "1.0"
