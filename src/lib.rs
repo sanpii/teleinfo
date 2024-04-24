@@ -10,6 +10,8 @@ pub enum Error {
     Utf8(#[from] std::string::FromUtf8Error),
     #[error("Invalid field: {0}")]
     InvalidField(String),
+    #[error("Invalid number: {0}")]
+    ParseIntError(#[from] std::num::ParseIntError),
 }
 
 #[derive(Debug, Default, Eq, PartialEq, serde::Serialize)]
@@ -78,17 +80,17 @@ impl Parser {
             };
 
             match key.as_str() {
-                "adco" => data.adco = value.parse().unwrap(),
-                "optarif" => data.optarif = value.parse().unwrap(),
-                "isousc" => data.isousc = value.parse().unwrap(),
-                "hchc" => data.hchc = value.parse().unwrap(),
-                "hchp" => data.hchp = value.parse().unwrap(),
-                "ptec" => data.ptec = value.parse().unwrap(),
-                "iinst" => data.iinst = value.parse().unwrap(),
-                "imax" => data.imax = value.parse().unwrap(),
-                "papp" => data.papp = value.parse().unwrap(),
-                "hhphc" => data.hhphc = value.parse().unwrap(),
-                "motdetat" => data.motdetat = value.parse().unwrap(),
+                "adco" => data.adco = value.to_string(),
+                "optarif" => data.optarif = value.to_string(),
+                "isousc" => data.isousc = value.parse()?,
+                "hchc" => data.hchc = value.parse()?,
+                "hchp" => data.hchp = value.parse()?,
+                "ptec" => data.ptec = value.to_string(),
+                "iinst" => data.iinst = value.parse()?,
+                "imax" => data.imax = value.parse()?,
+                "papp" => data.papp = value.parse()?,
+                "hhphc" => data.hhphc = value.to_string(),
+                "motdetat" => data.motdetat = value.to_string(),
                 _ => return Err(Error::InvalidField(key)),
             };
         }
