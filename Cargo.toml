@@ -3,6 +3,7 @@ name = "teleinfo"
 version = "1.0.0"
 authors = ["Sanpi <sanpi@homecomputing.fr>"]
 edition = "2021"
+repository = "https://github.com/sanpii/teleinfo"
 
 [dependencies]
 thiserror = "1.0"
