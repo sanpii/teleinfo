@@ -63,7 +63,7 @@ impl Parser {
             .map_err(Error::from)
     }
 
-    pub fn parse(self, frame: String) -> Result<Data> {
+    pub fn parse(self, frame: &str) -> Result<Data> {
         let mut data = Data::new();
 
         for line in frame.lines() {
@@ -143,7 +143,7 @@ HHPHC D /
 MOTDETAT 000000 B",
         );
 
-        let data = parser.parse(frame)?;
+        let data = parser.parse(&frame)?;
 
         assert_eq!(
             data,

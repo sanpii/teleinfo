@@ -17,7 +17,7 @@ fn main() {
         Err(err) => panic!("Unable to read device: {err}"),
     };
 
-    let data = match parser.parse(frame) {
+    let data = match parser.parse(&frame) {
         Ok(data) => data,
         Err(err) => panic!("Unable to parse frame: {err}"),
     };
