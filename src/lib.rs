@@ -121,7 +121,7 @@ MOTDETAT 000000 B"
         );
 
         Ok(())
-}
+    }
 
     #[test]
     fn parse() -> super::Result {
