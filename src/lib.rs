@@ -1,5 +1,17 @@
 #![warn(warnings)]
 
+pub type Result<T = ()> = std::result::Result<T, Error>;
+
+#[derive(Debug, thiserror::Error)]
+pub enum Error {
+    #[error("I/O error: {0}")]
+    Io(#[from] std::io::Error),
+    #[error("UTF-8 error: {0}")]
+    Utf8(#[from] std::string::FromUtf8Error),
+    #[error("Invalid field: {0}")]
+    InvalidField(String),
+}
+
 #[derive(Debug, Default, Eq, PartialEq, serde::Serialize)]
 pub struct Data {
     adco: String,
@@ -29,37 +41,27 @@ impl Parser {
         Self::default()
     }
 
-    pub fn read_frame<P: AsRef<std::path::Path>>(&self, path: P) -> Result<String, String> {
+    pub fn read_frame<P: AsRef<std::path::Path>>(&self, path: P) -> Result<String> {
         use std::io::BufRead;
 
-        let file = match std::fs::File::open(&path) {
-            Ok(file) => file,
-            Err(err) => panic!("Unable to open {}: {err}", path.as_ref().display()),
-        };
+        let file = std::fs::File::open(&path)?;
 
         let mut buffer = std::io::BufReader::new(&file);
         let mut line: Vec<u8> = Vec::new();
 
-        match buffer.read_until(0x2, &mut line) {
-            Ok(_) => (),
-            Err(err) => return Err(err.to_string()),
-        };
+        buffer.read_until(0x2, &mut line)?;
 
         buffer.consume(1);
         line = Vec::new();
 
-        match buffer.read_until(0x3, &mut line) {
-            Ok(_) => (),
-            Err(err) => return Err(err.to_string()),
-        };
+        buffer.read_until(0x3, &mut line)?;
 
-        match String::from_utf8(line) {
-            Ok(s) => Ok(s.trim_end_matches('\u{3}').replace('\r', "")),
-            Err(err) => Err(err.to_string()),
-        }
+        String::from_utf8(line)
+            .map(|s| s.trim_end_matches('\u{3}').replace('\r', ""))
+            .map_err(Error::from)
     }
 
-    pub fn parse(self, frame: String) -> Result<Data, String> {
+    pub fn parse(self, frame: String) -> Result<Data> {
         let mut data = Data::new();
 
         for line in frame.lines() {
@@ -87,7 +89,7 @@ impl Parser {
                 "papp" => data.papp = value.parse().unwrap(),
                 "hhphc" => data.hhphc = value.parse().unwrap(),
                 "motdetat" => data.motdetat = value.parse().unwrap(),
-                _ => return Err(format!("Invalid field: {key}")),
+                _ => return Err(Error::InvalidField(key)),
             };
         }
 
@@ -96,13 +98,10 @@ impl Parser {
 }
 
 #[test]
-fn read_frame() {
+fn read_frame() -> Result {
     let parser = Parser::new();
 
-    let frame = match parser.read_frame(String::from("./teleinfo.txt")) {
-        Ok(frame) => frame,
-        Err(err) => panic!("{err}"),
-    };
+    let frame = parser.read_frame(String::from("./teleinfo.txt"))?;
 
     assert_eq!(
         frame,
@@ -118,10 +117,12 @@ PAPP 00440 )
 HHPHC D /
 MOTDETAT 000000 B"
     );
+
+    Ok(())
 }
 
 #[test]
-fn parse() {
+fn parse() -> Result {
     let parser = Parser::new();
 
     let frame = String::from(
@@ -138,10 +139,7 @@ HHPHC D /
 MOTDETAT 000000 B",
     );
 
-    let data = match parser.parse(frame) {
-        Ok(data) => data,
-        Err(err) => panic!("{err}"),
-    };
+    let data = parser.parse(frame)?;
 
     assert_eq!(
         data,
@@ -159,4 +157,6 @@ MOTDETAT 000000 B",
             motdetat: String::from("000000"),
         }
     );
+
+    Ok(())
 }
