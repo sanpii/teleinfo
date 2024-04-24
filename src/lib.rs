@@ -1,9 +1,5 @@
 #![warn(warnings)]
 
-use std::fs::File;
-use std::io::BufRead;
-use std::io::BufReader;
-
 #[derive(Debug, Default, Eq, PartialEq, serde::Serialize)]
 pub struct Data {
     adco: String,
@@ -34,12 +30,14 @@ impl Parser {
     }
 
     pub fn read_frame(&self, path: String) -> Result<String, String> {
-        let file = match File::open(&path) {
+        use std::io::BufRead;
+
+        let file = match std::fs::File::open(&path) {
             Ok(file) => file,
             Err(err) => panic!("Unable to open {path}: {err}"),
         };
 
-        let mut buffer = BufReader::new(&file);
+        let mut buffer = std::io::BufReader::new(&file);
         let mut line: Vec<u8> = Vec::new();
 
         match buffer.read_until(0x2, &mut line) {
