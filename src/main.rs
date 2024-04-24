@@ -2,8 +2,6 @@
 
 use clap::Parser;
 
-mod teleinfo;
-
 #[derive(Parser)]
 struct Opt {
     device: String,

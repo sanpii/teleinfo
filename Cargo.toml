@@ -5,12 +5,20 @@ authors = ["Sanpi <sanpi@homecomputing.fr>"]
 edition = "2021"
 
 [dependencies]
-serde_json = "1.0"
 
 [dependencies.serde]
 version = "1.0"
 features = ["derive"]
 
+[dependencies.serde_json]
+version = "1.0"
+optional = true
+
 [dependencies.clap]
 version = "4.0"
 features = ["derive"]
+optional = true
+
+[[bin]]
+name = "teleinfo"
+required-features = ["clap", "serde_json"]
