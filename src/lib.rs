@@ -29,12 +29,12 @@ impl Parser {
         Self::default()
     }
 
-    pub fn read_frame(&self, path: String) -> Result<String, String> {
+    pub fn read_frame<P: AsRef<std::path::Path>>(&self, path: P) -> Result<String, String> {
         use std::io::BufRead;
 
         let file = match std::fs::File::open(&path) {
             Ok(file) => file,
-            Err(err) => panic!("Unable to open {path}: {err}"),
+            Err(err) => panic!("Unable to open {}: {err}", path.as_ref().display()),
         };
 
         let mut buffer = std::io::BufReader::new(&file);
