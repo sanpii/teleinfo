@@ -2,7 +2,7 @@ use std::fs::File;
 use std::io::BufRead;
 use std::io::BufReader;
 
-#[derive(Debug, Default, Eq, PartialEq, serde_derive::Serialize)]
+#[derive(Debug, Default, Eq, PartialEq, serde::Serialize)]
 pub struct Data {
     adco: String,
     optarif: String,
